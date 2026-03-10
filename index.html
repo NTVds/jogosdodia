@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Gerador M3U Jogos</title>
+
+<style>
+body{
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+text-align:center;
+padding:40px;
+}
+
+.box{
+background:#1c1c1c;
+padding:30px;
+border-radius:10px;
+display:inline-block;
+max-width:500px;
+}
+
+input{
+margin:10px;
+padding:10px;
+width:90%;
+}
+
+button{
+padding:12px 25px;
+font-size:16px;
+cursor:pointer;
+background:#7b2cff;
+color:white;
+border:none;
+border-radius:6px;
+}
+
+button:hover{
+background:#9a4dff;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+
+</head>
+
+<body>
+
+<h1>Gerador M3U de Jogos</h1>
+
+<div class="box">
+
+<p>Logo do canal (URL)</p>
+<input type="text" id="logo" placeholder="https://site/logo.png">
+
+<p>Imagens dos jogos</p>
+<input type="file" id="images" multiple>
+
+<button onclick="gerar()">Gerar Lista M3U</button>
+
+</div>
+
+<script>
+
+async function gerar(){
+
+let files = document.getElementById("images").files
+let logo = document.getElementById("logo").value
+
+if(files.length == 0){
+alert("Envie imagens dos jogos")
+return
+}
+
+let m3u = "#EXTM3U\n"
+
+for(let file of files){
+
+let result = await Tesseract.recognize(file,'por')
+
+let texto = result.data.text
+
+let horario = texto.match(/[0-2]?[0-9]:[0-5][0-9]/)
+
+let canal = "Canal"
+let canais = ["espn","sportv","premiere","globo","tnt"]
+
+for(let c of canais){
+if(texto.toLowerCase().includes(c)){
+canal = c.toUpperCase()
+}
+}
+
+let linhas = texto.split("\n")
+let jogo = linhas[0]
+
+m3u += `#EXTINF:-1 tvg-logo="${logo}" group-title="Jogos do Dia",${jogo} - ${horario} - ${canal}\n`
+m3u += `http://editar-link\n`
+
+}
+
+let blob = new Blob([m3u], {type:"text/plain"})
+
+let a = document.createElement("a")
+
+a.href = URL.createObjectURL(blob)
+a.download = "jogos_do_dia.m3u"
+
+a.click()
+
+}
+
+</script>
+
+</body>
+</html>
