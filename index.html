@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Gerador de M3U de Jogos</title>
+
+<style>
+body{
+font-family: Arial;
+background:#111;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+.box{
+background:#1e1e1e;
+padding:30px;
+border-radius:10px;
+display:inline-block;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+margin-top:10px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Gerador de M3U de Jogos</h1>
+
+<div class="box">
+
+<p>Selecione as imagens dos jogos</p>
+
+<input type="file" id="images" multiple>
+
+<br><br>
+
+<button onclick="gerarM3U()">Gerar Lista M3U</button>
+
+</div>
+
+<script>
+
+function gerarM3U(){
+
+const files = document.getElementById("images").files;
+
+if(files.length === 0){
+alert("Selecione as imagens primeiro");
+return;
+}
+
+let m3u = "#EXTM3U\n";
+
+for(let i=0;i<files.length;i++){
+
+let nome = files[i].name.replace(/\.[^/.]+$/, "");
+
+m3u += "#EXTINF:-1," + nome + "\n";
+m3u += "http://link-do-stream/" + nome + "\n";
+
+}
+
+const blob = new Blob([m3u], { type: "text/plain" });
+
+const link = document.createElement("a");
+
+link.href = URL.createObjectURL(blob);
+
+link.download = "lista.m3u";
+
+link.click();
+
+}
+
+</script>
+
+</body>
+</html>
